@@ -15,24 +15,24 @@ alias vim="nvim"
 
 
 setup() {
+    CURR_DIR=${PWD}
+    cd $HOME
     if [ ! -d "${STORAGE}" ]; then
         termux-setup-storage
     fi
 
-    pkg upgrade
-    pkg install termux-api
-    pkg install neovim
-    pkg install htop
+    echo y | pkg upgrade
+    echo y | pkg install termux-api neovim htop git openssh
     
-    curl "https://raw.githubusercontent.com/MoreUmph/termux-config/master/init.vim" -o ${NVIM}/init.vim
-    
-    for DIR in ${TERMUX} ${TRASH}; do
+    for DIR in ${TERMUX} ${TRASH} ${NVIM}; do
         if [ ! -d $DIR ]; then
             mkdir -p $DIR
         fi
     done
     
+    curl "https://raw.githubusercontent.com/MoreUmph/termux-config/master/init.vim" -o ${NVIM}/init.vim
     toast "Use the 'profile' and 'reload' commands to edit configuration"
+    cd $CURR_DIR
 }
 
 
@@ -79,7 +79,7 @@ disk() {
 # file(path)
 # ==========
 # - Opens 'path' with NeoVim
-# Ex: file $HOME/.bash_profile
+# Ex: file "$HOME/.bash_profile"
 
 file() {
     nvim "$1"
@@ -92,7 +92,7 @@ file() {
 # dir(path)
 # =========
 # - Cd into 'path', creating it if it doesnt exist
-# Ex: dir path/subpath/file.txt
+# Ex: dir "path/subpath"
 
 dir() {
     if [ ! -d "$1" ]; then
@@ -108,7 +108,7 @@ dir() {
 # copy(src, dest)
 # ===============
 # - Copies 'src' to 'dest'
-# Ex: copy file backup/file
+# Ex: copy "file" "backup/file"
 
 copy() {
     cp "$1" "$2"
@@ -121,7 +121,7 @@ copy() {
 # hardlink(src, dest)
 # ===================
 # - Hardlinks 'src' to 'dest'
-# Ex: link local external
+# Ex: link "local.yml" "external.yml"
 
 link() {
     ln "$1" "$2"
@@ -146,6 +146,7 @@ softlink() {
 # trash(file)
 # ===========
 # - Move 'file' to $TRASH
+# Ex: trash "old_folder"
 
 trash() {
     if [ -d ${TRASH} ]; then
@@ -162,6 +163,7 @@ trash() {
 # download(url, file)
 # ===================
 # - Downloads 'url' as 'file'
+# Ex: download "https://MoreRam.com" "cool.html"
 
 download() {
     curl "$1" -o "$2"
@@ -174,9 +176,10 @@ download() {
 # install(pkg)
 # ============
 # - Installs 'pkg'
+# Ex: install rust clang
 
 install() {
-    pkg install "$1"
+    pkg install "$@"
 }
 
 
@@ -185,6 +188,7 @@ install() {
 # update()
 # ========
 # - Updates and upgrades packages
+# Ex: update
 
 update() {
     pkg update
@@ -198,6 +202,7 @@ update() {
 # send(title, description, url)
 # ======================
 # - Download file externally
+# Ex: send "Webpage" "A page to save" "https://google.com"
 
 send() {
     termux-download -d "$2" -t "$1" "$3" &
@@ -207,15 +212,18 @@ send() {
 
 
 # ===========================
-# clipboard(get/set, content)
+# clipboard(paste/set/file, content/path)
 # ===========================
 # -
+# Ex: clipboard file "file.txt"
 
 clipboard() {
-    if [ $1 == 'copy' ]; then
+    if [ $1 == "paste" ]; then
         termux-clipboard-get
-    else
+    elif [ $1 == "set" ]; then
         termux-clipboard-set "$2" &
+    elif [ $1 == "file" ]; then
+        termux-clipboard-set "$(cat $2)" &
     fi
 }
 
@@ -226,6 +234,7 @@ clipboard() {
 # brightness(0-255)
 # =================
 # -
+# Ex: brightness 0
 
 brightness() {
     termux-brightness "$1" &
@@ -238,9 +247,10 @@ brightness() {
 # toast(title)
 # ======================
 # -
+# Ex: toast "A little popup"
 
 toast() {
-    termux-toast -b gray -c black -g middle "$1" &
+    termux-toast -b gray -c black -g middle "$1" </dev/null &>/dev/null &
 }
 
 
