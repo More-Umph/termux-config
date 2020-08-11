@@ -1,4 +1,5 @@
-export PS1='\e[35m\w\e[0m\n\e[92m$\e[0m '   # Sets text before input
+export PS1='\e[35m\w\e[0m
+\e[92m$\e[0m '   # Sets text before input
 export USER=/data/data/com.termux/files/usr # Sets USER env var
 export STORAGE=${HOME}/storage              # Sets STORAGE env var
 export TERMUX=${HOME}/.termux               # Sets TERMUX env var
@@ -11,50 +12,35 @@ alias home="cd ${HOME}"               # Alias 'home' to cd into home directory
 alias user="cd ${USER}"               # Alias 'user' to cd into usr directory
 alias back="cd .."                    # Alias 'back' to go back one directory
 alias list="ls -X -A"                 # Alias 'list' to show all files and sort by file type
-alias neovim="nvim"                   # Alias 'neovim' to nvim, used for install
+alias vim="nvim"
 
 
-# Install packages
-# ================
-pkg update
-alias termux-api="termux-brightness"
-for CMD in termux-api neovim git; do
-    if [ ! "command -v $CMD" ]; then
-        pkg install $CMD
+setup() {
+    if [ ! -d "${STORAGE}" ]; then
+        termux-setup-storage
     fi
-done
-unalias termux-api
 
-
-# Setup storage
-# =============
-if [ ! -d ${STORAGE} ]; then
-    termux-setup-storage
-fi
-
-
-# Create directories
-# ==================
-for DIR in ${TERMUX} ${TRASH} ${NVIM}; do
-    if [ ! -d $DIR ]; then
-        mkdir -p $DIR
-    fi
-done
-
-
-# Configure NeoVim
-# ================
-if [ ! -f "${NVIM}/init.vim" ]; then
+    pkg upgrade
+    pkg install termux-api
+    pkg install neovim
+    
+    for DIR in ${TERMUX} ${TRASH} ${NVIM}; do
+        if [ ! -d $DIR ]; then
+            mkdir -p $DIR
+        fi
+    done
+    
     curl "https://raw.githubusercontent.com/MoreUmph/termux-config/master/init.vim" -o init.vim
     mv init.vim ${NVIM}
-fi
-
+    toast "Use the 'profile' and 'reload' commands to edit configuration"
+}
 
 
 # ===========
 # print(args)
 # ===========
 # - Prints 'args' to stdout
+# Ex: print "To the terminal"
 
 print() {
     echo "$@"
@@ -67,6 +53,7 @@ print() {
 # open(url/file)
 # ==============
 # - Opens 'url/file' externally
+# Ex: open "https://google.com"
 
 open() {
     termux-open "$@" &
@@ -79,6 +66,7 @@ open() {
 # disk()
 # =========
 # - Prints disk space info
+# Ex: disk
 
 disk() {
     df -h
@@ -91,6 +79,7 @@ disk() {
 # file(path)
 # ==========
 # - Opens 'path' with NeoVim
+# Ex: file $HOME/.bash_profile
 
 file() {
     nvim "$1"
@@ -103,6 +92,7 @@ file() {
 # dir(path)
 # =========
 # - Cd into 'path', creating it if it doesnt exist
+# Ex: dir path/subpath/file.txt
 
 dir() {
     if [ ! -d "$1" ]; then
@@ -118,6 +108,7 @@ dir() {
 # copy(src, dest)
 # ===============
 # - Copies 'src' to 'dest'
+# Ex: copy file backup/file
 
 copy() {
     cp "$1" "$2"
@@ -130,6 +121,7 @@ copy() {
 # hardlink(src, dest)
 # ===================
 # - Hardlinks 'src' to 'dest'
+# Ex: link local external
 
 link() {
     ln "$1" "$2"
@@ -248,7 +240,7 @@ brightness() {
 # -
 
 toast() {
-    termux-toast -s -b gray -c black -g middle "$1" &
+    termux-toast -b gray -c black -g middle "$1" &
 }
 
 
