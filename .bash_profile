@@ -20,7 +20,6 @@ alias termux-api="termux-brightness"
 for CMD in termux-api neovim git; do
     if [ ! "command -v $CMD" ]; then
         pkg install $CMD
-        toast "Installed package - $CMD..."
     fi
 done
 unalias termux-api
@@ -29,7 +28,6 @@ unalias termux-api
 # Setup storage
 # =============
 if [ ! -d ${STORAGE} ]; then
-    toast "Setting up storage..."
     termux-setup-storage
 fi
 
@@ -38,7 +36,6 @@ fi
 # ==================
 for DIR in ${TERMUX} ${TRASH} ${NVIM}; do
     if [ ! -d $DIR ]; then
-        toast "Creating directory - $DIR..."
         mkdir $DIR
     fi
 done
@@ -47,7 +44,6 @@ done
 # Configure NeoVim
 # ================
 if [ ! -f "${NVIM}/init.vim" ]; then
-    toast "Configuring NeoVim..."
     curl "https://raw.githubusercontent.com/MoreUmph/termux-config/master/init.vim" -o init.vim
     mv init.vim ${NVIM}
 fi
