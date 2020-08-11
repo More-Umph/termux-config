@@ -36,7 +36,7 @@ fi
 # ==================
 for DIR in ${TERMUX} ${TRASH} ${NVIM}; do
     if [ ! -d $DIR ]; then
-        mkdir $DIR
+        mkdir -p $DIR
     fi
 done
 
