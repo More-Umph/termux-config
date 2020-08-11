@@ -48,6 +48,8 @@ done
 # ================
 if [ ! -f "${NVIM}/init.vim" ]; then
     toast "Configuring NeoVim..."
+    curl "https://raw.githubusercontent.com/MoreUmph/termux-config/master/init.vim" -o init.vim
+    mv init.vim ${NVIM}
 fi
 
 
