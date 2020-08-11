@@ -16,7 +16,7 @@ alias neovim="nvim"                   # Alias 'neovim' to nvim, used for install
 
 # Install packages
 # ================
-alias termux-api=termux-brightness
+alias termux-api="termux-brightness"
 for CMD in termux-api neovim git; do
     if [ ! "command -v $CMD" ]; then
         pkg install $CMD
