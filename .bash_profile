@@ -1,5 +1,4 @@
-export PS1='\e[35m\w\e[0m
-\e[92m$\e[0m '   # Sets text before input
+export PS1='\e[35m\w\e[0m\n\e[92m$\e[0m '   # Sets text before input
 export USER=/data/data/com.termux/files/usr # Sets USER env var
 export STORAGE=${HOME}/storage              # Sets STORAGE env var
 export TERMUX=${HOME}/.termux               # Sets TERMUX env var
@@ -23,15 +22,16 @@ setup() {
     pkg upgrade
     pkg install termux-api
     pkg install neovim
+    pkg install htop
     
-    for DIR in ${TERMUX} ${TRASH} ${NVIM}; do
+    curl "https://raw.githubusercontent.com/MoreUmph/termux-config/master/init.vim" -o ${NVIM}/init.vim
+    
+    for DIR in ${TERMUX} ${TRASH}; do
         if [ ! -d $DIR ]; then
             mkdir -p $DIR
         fi
     done
     
-    curl "https://raw.githubusercontent.com/MoreUmph/termux-config/master/init.vim" -o init.vim
-    mv init.vim ${NVIM}
     toast "Use the 'profile' and 'reload' commands to edit configuration"
 }
 
